@@ -7,21 +7,22 @@
 
 DRIVE="/Volumes/Photos"
 
-while getopts ":n:i:d::m" opt; do
+usage() {
+    echo "Usage: mckinnonify.sh -n event_name -i directory [-m | -d output_base]"
+    exit 1
+}
+
+while getopts ":n:i:d::mr" opt; do
     case "$opt" in
         n) EVENT="${OPTARG}" ;;
         i) IN_DIR="${OPTARG}" ;;
         d) DRIVE="${OPTARG}" ;;
         m) MISC=true ;;
+        r) RENO=true ;;
         *) usage ;;
     esac
 done
 shift $((OPTIND-1))
-
-usage() {
-    echo "Usage: mckinnonify.sh -n event_name -i directory [-m | -d output_base]"
-    exit 1
-}
 
 if [ -z "$EVENT" ] || [ -z "$IN_DIR" ]; then
     usage
@@ -46,6 +47,8 @@ for image in "$IN_DIR"*; do
 
     if [ "$MISC" ]; then
         BASE_DIR="$DRIVE/$YEAR/Miscellaneous $YEAR/$EVENT/$DATE/$MODEL/$TYPE/"
+    elif [ "$RENO" ]; then
+        BASE_DIR="$DRIVE/$YEAR/Renovations $YEAR/$EVENT/$DATE/$MODEL/$TYPE/"
     else
         BASE_DIR="$DRIVE/$YEAR/$EVENT $YEAR/$DATE/$MODEL/$TYPE/"
     fi
@@ -55,6 +58,6 @@ for image in "$IN_DIR"*; do
         mkdir -pv "$BASE_DIR"
     fi
 
-    cp -v "$image" "$BASE_DIR"
+    cp -vn "$image" "$BASE_DIR"
 
 done
